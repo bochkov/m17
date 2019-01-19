@@ -15,7 +15,7 @@ proc all*(members: Members) : seq[Member] =
         rows : seq[Row] = members.db.getAllRows(sql("SELECT * FROM members ORDER BY weight"))
     for row in rows:
         retre.add(
-            newMember(row[0].parseInt(), row[1], row[2])
+            newMember(row[0].parseInt(), row[1], row[2], row[3].parseInt())
         )
     return retre
     
