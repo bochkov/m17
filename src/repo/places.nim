@@ -7,7 +7,7 @@ type
         db : DbConn
 
 proc newPlaces*(db : DbConn) : Places =
-    result.db = db
+    return Places(db: db)
 
 proc getById*(places: Places, id : int) : Place =
     var row : Row = places.db.getRow(sql("SELECT * FROM places WHERE id=?"), id)
