@@ -1,3 +1,4 @@
+import os
 import re
 import jester
 import json
@@ -8,15 +9,26 @@ import repo/[gigs,members,places,videos]
 import model/[gig,member,place,video]
 import "http/response"
 
+const
+    host : string = getEnv("DB_HOST")
+    database : string = getEnv("DB_NAME")
+    user : string = getEnv("DB_USER")
+    password : string = getEnv("DB_PASSWORD")
+
+if host == "" or database == "" or user == "" or password == "":
+    echo "No env DB_HOST/DB_NAME/DB_USER/DB_PASSWORD"
+    echo "Exiting."
+    quit(5)
+
 let
-    dbConn : DbConn = newConn("192.168.55.5", "m17", "m17", "m17")
+    dbConn : DbConn = newConn(host, database, user, password)
     placesRepo : Places = newPlaces(dbConn)
     gigRepo : Gigs = newGigs(dbConn, placesRepo)
     memRepo : Members = newMembers(dbConn)
     videoRepo : Videos = newVideos(dbConn)
 
 template jresp(content: string, contentType = "application/json") : typed =
-    resp Http200, [("Access-Control-Allow-Origin", "*"),("Content-Type", contentType)], content
+    resp Http200, [("Content-Type", contentType)], content
 
 routes:
     options re"/*":
