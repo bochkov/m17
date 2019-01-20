@@ -9,12 +9,21 @@ import repo/[gigs,members,places,videos]
 import model/[gig,member,place,video]
 import "http/response"
 
-const
+let
     host : string = getEnv("DB_HOST")
     database : string = getEnv("DB_NAME")
     user : string = getEnv("DB_USER")
     password : string = getEnv("DB_PASSWORD")
 
+echo "DB_HOST: " & host
+echo "DB_NAME: " & database
+echo "DB_USER: " & user
+var maskedPass : string
+if password == "":
+    maskedPass = password
+else:
+    maskedPass = "******"
+echo "DB_PASSWORD: " & maskedPass
 if host == "" or database == "" or user == "" or password == "":
     echo "No env DB_HOST/DB_NAME/DB_USER/DB_PASSWORD"
     echo "Exiting."
