@@ -1,7 +1,7 @@
 FROM nimlang/nim:alpine AS builder
 COPY src .
 RUN nimble install jester -y
-RUN nim c -d:release src/app.nim
+RUN nim c -d:release app.nim
 
 FROM alpine
 RUN apk add --no-cache libpq
