@@ -1,6 +1,7 @@
 import os
 import re
 import jester
+import times
 import json
 import strtabs
 import db_postgres
@@ -37,7 +38,7 @@ let
     videoRepo : Videos = newVideos(dbConn)
 
 template jresp(content: string, contentType = "application/json") : typed =
-    resp Http200, [("Content-Type", contentType)], content
+    resp Http200, [("Access-Control-Allow-Origin", "*"), ("Content-Type", contentType)], content
 
 routes:
     options re"/*":
@@ -45,7 +46,7 @@ routes:
 
     get "/api/v1/gigs":
         var retre = %*[]
-        for gig in gigRepo.all():
+        for gig in gigRepo.allSince(now()):
             retre.add( %* gig.toJson() )
         jresp $retre
 

@@ -26,3 +26,19 @@ proc all*(gigs : Gigs) : seq[Gig] =
             )
         )
     return retre
+
+proc allSince*(gigs: Gigs, dt: DateTime) : seq[Gig] =
+    var
+        retre : seq[Gig] = @[]
+        rows : seq[Row] = gigs.db
+            .getAllRows(sql("SELECT * FROM gigs WHERE dt >= ? order by dt desc, tm desc"), dt)
+    for row in rows:
+        retre.add(
+            newGig(
+                row[0].parseInt(),
+                row[1],
+                row[2],
+                gigs.places.getById(row[3].parseInt())
+            )
+        )
+    return retre
