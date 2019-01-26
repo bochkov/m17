@@ -39,7 +39,8 @@ let
     videoRepo : Videos = newVideos(dbConn)
 
 template jresp(content: string, contentType = "application/json") : typed =
-    resp Http200, [("Access-Control-Allow-Origin", "*"), ("Content-Type", contentType)], content
+    # ("Access-Control-Allow-Origin", "*"),
+    resp Http200, [("Content-Type", contentType)], content
 
 routes:
     options re"/*":
