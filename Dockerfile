@@ -5,6 +5,7 @@ RUN nim c -d:release app.nim
 
 FROM alpine
 RUN apk add --no-cache libpq pcre
+RUN echo "Asia/Yekaterinburg" > /etc/timezone
 RUN mkdir /m17
 WORKDIR /m17
 COPY --from=builder app .
