@@ -12,10 +12,10 @@ proc newMusics*(db : DbConn) : Musics =
 proc linksFor(musics: Musics, id: int) : seq[MusLink] =
     var
         retre : seq[MusLink] = @[]
-        rows : seq[Row] = musics.db.getAllRows(sql("select ml.id, ml.url, mp.name from music_links ml, music_provs mp where ml.provider = mp.id and ml.music = ?"), id)
+        rows : seq[Row] = musics.db.getAllRows(sql("select ml.id, ml.url, mp.id, mp.name from music_links ml, music_provs mp where ml.provider = mp.id and ml.music = ? order by mp.id"), id)
     for row in rows:
         retre.add(
-            newMusLink(row[0].parseInt(), row[1], row[2])
+            newMusLink(row[0].parseInt(), row[1], row[2].parseInt(), row[3])
         )
     return retre
 
