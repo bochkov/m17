@@ -12,7 +12,7 @@ proc newVideos*(db : DbConn) : Videos =
 proc all*(videos: Videos) : seq[Video] =
     var
         retre : seq[Video] = @[]
-        rows : seq[Row] = videos.db.getAllRows(sql("SELECT * FROM video ORDER BY vorder"))
+        rows : seq[Row] = videos.db.getAllRows(sql("SELECT * FROM video ORDER BY vorder desc"))
     for row in rows:
         retre.add(
             newVideo(row[0].parseInt(), row[1], row[2])
