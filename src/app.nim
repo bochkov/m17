@@ -6,8 +6,8 @@ import json
 import strtabs
 import db_postgres
 import "db"
-import repo/[gigs,members,places,videos]
-import model/[gig,member,place,video]
+import repo/[gigs,members,musics,places,videos]
+import model/[gig,member,music,place,video]
 import "http/response"
 
 let
@@ -34,6 +34,7 @@ let
     dbConn : DbConn = newConn(host, database, user, password)
     placesRepo : Places = newPlaces(dbConn)
     gigRepo : Gigs = newGigs(dbConn, placesRepo)
+    musRepo: Musics = newMusics(dbConn)
     memRepo : Members = newMembers(dbConn)
     videoRepo : Videos = newVideos(dbConn)
 
@@ -60,4 +61,10 @@ routes:
         var retre = %*[]
         for v in videoRepo.all():
             retre.add( %* v.toJson() )
+        jresp $retre
+
+    get "/api/v1/musics":
+        var retre = %*[]
+        for m in musRepo.all():
+            retre.add( %* m.toJson() )
         jresp $retre
