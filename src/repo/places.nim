@@ -11,4 +11,4 @@ proc newPlaces*(db : DbConn) : Places =
 
 proc getById*(places: Places, id : int) : Place =
     var row : Row = places.db.getRow(sql("SELECT * FROM places WHERE id=?"), id)
-    return newPlace(row[0].parseInt(), row[1], row[2])
+    return newPlace(row[0].parseInt(), row[1], row[2], row[3])

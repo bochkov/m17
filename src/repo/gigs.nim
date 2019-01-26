@@ -31,7 +31,7 @@ proc allSince*(gigs: Gigs, dt: DateTime) : seq[Gig] =
     var
         retre : seq[Gig] = @[]
         rows : seq[Row] = gigs.db
-            .getAllRows(sql("SELECT * FROM gigs WHERE dt >= ? order by dt desc, tm desc"), dt)
+            .getAllRows(sql("SELECT * FROM gigs WHERE dt >= ? order by dt, tm"), dt)
     for row in rows:
         retre.add(
             newGig(
