@@ -1,14 +1,17 @@
 import os
 import re
 import jester
-import times
+import times    
 import json
+import algorithm
 import strtabs
 import db_postgres
 import "db"
 import repo/[gigs,members,musics,places,videos]
 import model/[gig,member,music,place,video]
 import "http/response"
+
+const STATIC_DIR : string = "./public/static"
 
 let
     host : string = getEnv("DB_HOST")
@@ -39,7 +42,6 @@ let
     videoRepo : Videos = newVideos(dbConn)
 
 template jresp(content: string, contentType = "application/json") : typed =
-    # ("Access-Control-Allow-Origin", "*"),
     resp Http200, [("Content-Type", contentType)], content
 
 routes:
@@ -69,3 +71,12 @@ routes:
         for m in musRepo.all():
             retre.add( %* m.toJson() )
         jresp $retre
+
+    get "/api/v1/gallery":
+        var 
+            retre : seq[string]
+            galleryDir : string = STATIC_DIR & "/gallery"
+        for kind, path in walkDir(galleryDir, false):
+            retre.add(path[8..<path.len])
+        retre.sort(system.cmp)
+        jresp $(%retre)
