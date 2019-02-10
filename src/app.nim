@@ -7,7 +7,7 @@ import algorithm
 import strtabs
 import db_postgres
 import "db"
-import repo/[gigs,members,musics,places,videos]
+import repo/[props,gigs,members,musics,places,videos]
 import model/[gig,member,music,place,video]
 import "http/response"
 
@@ -35,11 +35,12 @@ if host == "" or database == "" or user == "" or password == "":
 
 let
     dbConn : DbConn = newConn(host, database, user, password)
+    propsRepo : Props = newProps(dbConn)
     placesRepo : Places = newPlaces(dbConn)
     gigRepo : Gigs = newGigs(dbConn, placesRepo)
     musRepo: Musics = newMusics(dbConn)
     memRepo : Members = newMembers(dbConn)
-    videoRepo : Videos = newVideos(dbConn)
+    videoRepo : Videos = newVideos(dbConn, propsRepo)
 
 template jresp(content: string, contentType = "application/json") : typed =
     resp Http200, [("Content-Type", contentType)], content
