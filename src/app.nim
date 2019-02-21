@@ -8,7 +8,7 @@ import strtabs
 import db_postgres
 import "db"
 import repo/[props,gigs,members,musics,places,videos,news]
-import model/[gig,member,music,place,video,newsItem]
+import model/[gig,member,music,place,video,newsitem]
 import "http/response"
 
 const STATIC_DIR : string = "./public/static"
