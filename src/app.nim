@@ -1,14 +1,14 @@
 import os
 import re
 import jester
-import times    
+import times
 import json
 import algorithm
 import strtabs
 import db_postgres
 import "db"
-import repo/[props,gigs,members,musics,places,videos]
-import model/[gig,member,music,place,video]
+import repo/[props,gigs,members,musics,places,videos,news]
+import model/[gig,member,music,place,video,newsItem]
 import "http/response"
 
 const STATIC_DIR : string = "./public/static"
@@ -41,6 +41,7 @@ let
     musRepo: Musics = newMusics(dbConn)
     memRepo : Members = newMembers(dbConn)
     videoRepo : Videos = newVideos(dbConn, propsRepo)
+    newsRepo : News = newNews(dbConn, propsRepo)
 
 template jresp(content: string, contentType = "application/json") : typed =
     resp Http200, [("Content-Type", contentType)], content
@@ -74,10 +75,16 @@ routes:
         jresp $retre
 
     get "/api/v1/gallery":
-        var 
+        var
             retre : seq[string]
             galleryDir : string = STATIC_DIR & "/gallery"
         for kind, path in walkDir(galleryDir, false):
             retre.add(path[8..<path.len])
         retre.sort(system.cmp)
         jresp $(%retre)
+
+    get "/api/v1/news":
+        var retre = %*[]
+        for n in newsRepo.all():
+            retre.add( %* n.toJson() )
+        jresp $retre
