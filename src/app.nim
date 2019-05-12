@@ -19,6 +19,7 @@ let
     user : string = getEnv("DB_USER")
     password : string = getEnv("DB_PASSWORD")
 
+echo "M17 backend start == ", now()
 echo "DB_HOST: " & host
 echo "DB_NAME: " & database
 echo "DB_USER: " & user
