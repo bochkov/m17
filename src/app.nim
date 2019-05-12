@@ -12,7 +12,6 @@ import model/[gig,member,music,place,video,newsitem]
 import "http/response"
 
 const STATIC_DIR : string = "./public/static"
-writeFile(STATIC_DIR & "m17.anchor", "m17.anchor")
 
 let
     host : string = getEnv("DB_HOST")
