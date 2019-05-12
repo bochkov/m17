@@ -12,6 +12,7 @@ import model/[gig,member,music,place,video,newsitem]
 import "http/response"
 
 const STATIC_DIR : string = "./public/static"
+writeFile(STATIC_DIR & "m17.anchor", "m17.anchor")
 
 let
     host : string = getEnv("DB_HOST")
@@ -23,16 +24,11 @@ echo "M17 backend start == ", now()
 echo "DB_HOST: " & host
 echo "DB_NAME: " & database
 echo "DB_USER: " & user
-var maskedPass : string
-if password == "":
-    maskedPass = password
-else:
-    maskedPass = "******"
-echo "DB_PASSWORD: " & maskedPass
-if host == "" or database == "" or user == "" or password == "":
+if host == "" or database == "" or user == "":
     echo "No env DB_HOST/DB_NAME/DB_USER/DB_PASSWORD"
     echo "Exiting."
     quit(5)
+echo "DB_PASSWORD: ******"
 
 let
     dbPool : DbPool = newPool(host, user, password, database)

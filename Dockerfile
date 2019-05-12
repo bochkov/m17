@@ -1,6 +1,7 @@
 FROM nimlang/nim:latest-alpine AS builder
 COPY src .
-RUN nimble install jester -y
+RUN nim --version
+RUN nimble install jester@0.4.0 -y
 RUN nim c -d:release app.nim
 
 FROM alpine
