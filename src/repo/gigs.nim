@@ -1,4 +1,5 @@
 import db_postgres
+import "../db"
 import strutils
 import times
 import "places"
@@ -6,16 +7,16 @@ import "../model/gig", "../model/place"
 
 type
     Gigs* = object of RootObj
-        db : DbConn
+        db : DbPool
         places : Places
 
-proc newGigs*(db :DbConn, places: Places) : Gigs =
+proc newGigs*(db: DbPool, places: Places) : Gigs =
     return Gigs(db : db, places: places)
 
 proc all*(gigs : Gigs) : seq[Gig] =
     var
         retre : seq[Gig] = @[]
-        rows : seq[Row] = gigs.db.getAllRows(sql("SELECT * FROM gigs"))
+        rows : seq[Row] = gigs.db.conn.getAllRows(sql("SELECT * FROM gigs"))
     for row in rows:
         retre.add(
             newGig(
@@ -30,7 +31,7 @@ proc all*(gigs : Gigs) : seq[Gig] =
 proc allSince*(gigs: Gigs, dt: DateTime) : seq[Gig] =
     var
         retre : seq[Gig] = @[]
-        rows : seq[Row] = gigs.db
+        rows : seq[Row] = gigs.db.conn
             .getAllRows(sql("SELECT * FROM gigs WHERE dt >= ? order by dt, tm"), dt)
     for row in rows:
         retre.add(

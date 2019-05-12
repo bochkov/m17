@@ -1,9 +1,29 @@
 import db_postgres
 
-var conn : DbConn
+type 
+    DbPool* = object of RootObj
+        host: string
+        user: string
+        password: string
+        database: string
 
-proc newConn*(connection, user, password, database : string) : DbConn =
-    if (conn == nil):
-        conn = open(connection, user, password, database);
-        discard conn.setEncoding("UTF-8");
-    return conn
+proc newPool*(host, user, password, database: string) : DbPool =
+    return DbPool(
+        host: host,
+        user: user,
+        password: password,
+        database: database
+    )
+
+var connection: DbConn
+
+proc conn*(db: DbPool) : DbConn =
+    if connection != nil:
+        if connection.tryExec(sql"SELECT 1"):
+            return connection
+        else:
+            connection.close()
+
+    connection = open(db.host, db.user, db.password, db.database)
+    discard connection.setEncoding("UTF-8")
+    return connection

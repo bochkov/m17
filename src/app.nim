@@ -34,14 +34,14 @@ if host == "" or database == "" or user == "" or password == "":
     quit(5)
 
 let
-    dbConn : DbConn = newConn(host, database, user, password)
-    propsRepo : Props = newProps(dbConn)
-    placesRepo : Places = newPlaces(dbConn)
-    gigRepo : Gigs = newGigs(dbConn, placesRepo)
-    musRepo: Musics = newMusics(dbConn)
-    memRepo : Members = newMembers(dbConn)
-    videoRepo : Videos = newVideos(dbConn, propsRepo)
-    newsRepo : News = newNews(dbConn, propsRepo)
+    dbPool : DbPool = newPool(host, user, password, database)
+    propsRepo : Props = newProps(dbPool)
+    placesRepo : Places = newPlaces(dbPool)
+    gigRepo : Gigs = newGigs(dbPool, placesRepo)
+    musRepo: Musics = newMusics(dbPool)
+    memRepo : Members = newMembers(dbPool)
+    videoRepo : Videos = newVideos(dbPool, propsRepo)
+    newsRepo : News = newNews(dbPool, propsRepo)
 
 template jresp(content: string, contentType = "application/json") : typed =
     resp Http200, [("Content-Type", contentType)], content
