@@ -2,7 +2,7 @@ FROM nimlang/nim:latest-alpine AS builder
 COPY src .
 RUN nim --version
 RUN nimble install jester -y
-RUN nim c -d:release app.nim
+RUN nim c -d:release --threads:on app.nim
 
 FROM alpine
 RUN apk add --no-cache libpq pcre tzdata
