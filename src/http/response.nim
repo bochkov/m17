@@ -1,7 +1,7 @@
 import json
 
 type
-    Response = object of RootObj
+    Response = object
         result: string
 
 proc success*() : Response =
@@ -10,8 +10,5 @@ proc success*() : Response =
 proc fail*() : Response =
     return Response(result: "false")
 
-proc newResponse*(res: string) : Response =
-    return Response(result: res)
-
-proc `$`*(resp: Response) : string =
-    return $ %* { "result": resp.result }
+proc `%`*(resp: Response): JsonNode =
+    return %* {"result": resp.result }
