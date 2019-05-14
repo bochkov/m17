@@ -1,14 +1,21 @@
 import json
 
 type
-    Place* = object of RootObj
+    Place* = object
         id: int
-        name, address, link: string
+        name: string
+        address: string
+        link: string
 
-proc newPlace*(id: int, name, address, link: string) : Place =
-    return Place(id: id, name: name, address: address, link: link)
+proc newPlace*(id: int, name, address, link: string): Place =
+    return Place(
+        id: id,
+        name: name,
+        address: address,
+        link: link
+    )
 
-proc toJson*(place : Place) : JsonNode =
+proc `%`*(place: Place): JsonNode =
     return %* {
         "id": place.id,
         "name": place.name,

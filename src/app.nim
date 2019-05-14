@@ -1,11 +1,12 @@
+import algorithm
+import db_postgres
+import jester
+import json
 import os
 import re
-import jester
-import times
-import json
-import algorithm
 import strtabs
-import db_postgres
+import times
+
 import "db"
 import repo/[props, gigs, members, musics, places, videos, news]
 import model/[gig, member, music, place, video, newsitem]
@@ -44,31 +45,19 @@ template jresp(json: JsonNode, contentType = "application/json"): typed =
 
 routes:
     options re"/*":
-        jresp(%success())
+        jresp( %* success())
 
     get "/api/v1/gigs":
-        var retre = %*[]
-        for gig in gigRepo.allSince(now()):
-            retre.add( %* gig.toJson())
-        jresp(retre)
+        jresp( %* gigRepo.allSince(now()))
 
     get "/api/v1/members":
-        var retre = %*[]
-        for mem in memRepo.all():
-            retre.add( %* mem.toJson())
-        jresp(retre)
+        jresp( %* memRepo.all())
 
     get "/api/v1/videos":
-        var retre = %*[]
-        for v in videoRepo.all():
-            retre.add( %* v.toJson())
-        jresp(retre)
+        jresp( %* videoRepo.all())
 
     get "/api/v1/musics":
-        var retre = %*[]
-        for m in musRepo.all():
-            retre.add( %* m.toJson())
-        jresp(retre)
+        jresp( %* musRepo.all())
 
     get "/api/v1/gallery":
         var
@@ -77,10 +66,7 @@ routes:
         for kind, path in walkDir(galleryDir, false):
             retre.add(path[8..<path.len])
         retre.sort(system.cmp)
-        jresp(%retre)
+        jresp( %* retre)
 
     get "/api/v1/news":
-        var retre = %*[]
-        for n in newsRepo.all():
-            retre.add( %* n.toJson())
-        jresp(retre)
+        jresp( %* newsRepo.all())

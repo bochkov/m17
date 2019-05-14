@@ -1,16 +1,21 @@
 import json
 
 type
-    MusLink* = object of RootObj
+    MusLink* = object
         id: int
-        url: string
         provid: int
         provider: string
+        url: string
 
-proc newMusLink*(id: int, url: string, provid: int, provider: string) : MusLink =
-    return MusLink(id: id, url: url, provid: provid, provider: provider)
+proc newMusLink*(id, provid: int, provider, url: string): MusLink =
+    return MusLink(
+        id: id,
+        provid: provid,
+        provider: provider,
+        url: url,
+    )
 
-proc toJson*(mus : MusLink) : JsonNode =
+proc `%`*(mus: MusLink): JsonNode =
     return %* {
         "id": mus.id,
         "url": mus.url,

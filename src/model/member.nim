@@ -1,20 +1,25 @@
-import times
 import json
+import times
 
 type
-    Member* = object of RootObj
+    Member* = object
         id: int
         name: string
         text: string
         order: int
 
-proc newMember*(id: int, name, text: string, order: int) : Member =
-    return Member(id: id, name: name, text: text, order: order)
+proc newMember*(id: int, name, text: string, order: int): Member =
+    return Member(
+        id: id,
+        name: name,
+        text: text,
+        order: order
+    )
 
-proc toJson*(mem : Member) : JsonNode =
+proc `%`*(this: Member): JsonNode =
     return %* {
-        "id": mem.id,
-        "name": mem.name,
-        "text": mem.text,
-        "order": mem.order
+        "id": this.id,
+        "name": this.name,
+        "text": this.text,
+        "order": this.order
     }

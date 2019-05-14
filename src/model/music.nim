@@ -1,23 +1,25 @@
 import json
-import "muslink.nim"
+import "muslink"
 
 type
-    Music* = object of RootObj
+    Music* = object
         id: int
         name: string
         year: int
         links: seq[MusLink]
 
-proc newMusic*(id: int, name: string, year: int, links: seq[MusLink]) : Music =
-    return Music(id: id, name: name, year: year, links: links)
+proc newMusic*(id: int, name: string, year: int, links: seq[MusLink]): Music =
+    return Music(
+        id: id,
+        name: name,
+        year: year,
+        links: links
+    )
 
-proc toJson*(mus : Music) : JsonNode =
-    var links = %* []
-    for link in mus.links:
-        links.add(link.toJson())
+proc `%`*(this: Music): JsonNode =
     return %* {
-        "id": mus.id,
-        "name": mus.name,
-        "year": mus.year,
-        "links": links
+        "id": this.id,
+        "name": this.name,
+        "year": this.year,
+        "links": this.links
     }

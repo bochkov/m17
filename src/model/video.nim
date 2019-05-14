@@ -1,16 +1,21 @@
 import json
 
 type
-    Video* = object of RootObj
+    Video* = object
         id: int
-        iframe, desc: string
+        iframe: string
+        desc: string
 
-proc newVideo*(id: int, iframe, desc : string) : Video =
-    return Video(id: id, iframe: iframe, desc: desc)
+proc newVideo*(id: int, iframe, desc: string): Video =
+    return Video(
+        id: id,
+        iframe: iframe,
+        desc: desc
+    )
 
-proc toJson*(v : Video) : JsonNode =
+proc `%`*(this: Video): JsonNode =
     return %* {
-        "id": v.id,
-        "iframe": v.iframe,
-        "desc": v.desc
+        "id": this.id,
+        "iframe": this.iframe,
+        "desc": this.desc
     }
