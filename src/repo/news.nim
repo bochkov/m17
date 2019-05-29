@@ -1,24 +1,18 @@
 import db_postgres
-import "../db"
 import strutils
-import "props"
 import "../model/newsitem"
 
 type
-    News* = object of RootObj
-        db : DbPool
-        props: Props
+    News* = object
+        db: DbConn
 
-proc newNews*(db : DbPool, props: Props) : News =
-    return News(db: db, props: props)
+proc newNews*(db: DbConn): News =
+    return News(db: db)
 
-proc all*(news: News) : seq[NewsItem] =
-    var
-        limit : int = news.props.value("max_news", "10").parseInt()
-        retre : seq[NewsItem] = @[]
-        rows : seq[Row] = news.db.conn
-            .getAllRows(sql("SELECT * FROM news ORDER BY dt desc LIMIT ?"), limit)
-    for row in rows:
+proc all*(this: News, limit: int = 10): seq[NewsItem] =
+    var query: string = "SELECT * FROM news ORDER BY dt DESC LIMIT ?"
+    var retre: seq[NewsItem] = @[]
+    for row in this.db.getAllRows(sql(query), limit):
         retre.add(
             newNewsItem(row[0].parseInt(), row[1], row[2], row[3])
         )

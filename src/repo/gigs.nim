@@ -1,45 +1,38 @@
 import db_postgres
-import "../db"
 import strutils
 import times
 import "places"
 import "../model/gig", "../model/place"
 
+let DT_START: DateTime = "1982-10-16".parse("yyyy-MM-dd")
+
 type
-    Gigs* = object of RootObj
-        db : DbPool
-        places : Places
+    Gigs* = object
+        db: DbConn
 
-proc newGigs*(db: DbPool, places: Places) : Gigs =
-    return Gigs(db : db, places: places)
+proc newGigs*(db: DbConn): Gigs =
+    return Gigs(db: db)
 
-proc all*(gigs : Gigs) : seq[Gig] =
-    var
-        retre : seq[Gig] = @[]
-        rows : seq[Row] = gigs.db.conn.getAllRows(sql("SELECT * FROM gigs"))
-    for row in rows:
+proc all*(this: Gigs, since: DateTime = DT_START): seq[Gig] =
+    var query: string = """SELECT 
+        g.id, g.dt, g.tm, 
+        p.id, p.name, p.address, p.link 
+        FROM gigs g, places p 
+        WHERE g.place = p.id AND g.dt >= ?
+        ORDER BY g.dt, g.tm"""
+    var retre: seq[Gig] = @[]
+    for row in this.db.getAllRows(sql(query), since):
         retre.add(
             newGig(
                 row[0].parseInt(),
                 row[1],
                 row[2],
-                gigs.places.getById(row[3].parseInt())
+                newPlace(
+                    row[3].parseInt(),
+                    row[4],
+                    row[5],
+                    row[6]
             )
         )
-    return retre
-
-proc allSince*(gigs: Gigs, dt: DateTime) : seq[Gig] =
-    var
-        retre : seq[Gig] = @[]
-        rows : seq[Row] = gigs.db.conn
-            .getAllRows(sql("SELECT * FROM gigs WHERE dt >= ? order by dt, tm"), dt)
-    for row in rows:
-        retre.add(
-            newGig(
-                row[0].parseInt(),
-                row[1],
-                row[2],
-                gigs.places.getById(row[3].parseInt())
-            )
         )
     return retre

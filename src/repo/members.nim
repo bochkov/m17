@@ -1,23 +1,24 @@
 import db_postgres
-import "../db"
 import strutils
 import "../model/member"
 
 type
-    Members* = object of RootObj
-        db : DbPool
+    Members* = object
+        db: DbConn
 
-proc newMembers*(db : DbPool) : Members =
+proc newMembers*(db: DbConn): Members =
     return Members(db: db)
 
-proc all*(members: Members) : seq[Member] =
-    var
-        retre : seq[Member] = @[]
-        rows : seq[Row] = members.db.conn
-            .getAllRows(sql("SELECT * FROM members ORDER BY weight"))
-    for row in rows:
+proc all*(this: Members): seq[Member] =
+    var query = "SELECT * FROM members ORDER BY weight"
+    var retre: seq[Member] = @[]
+    for row in this.db.getAllRows(sql(query)):
         retre.add(
-            newMember(row[0].parseInt(), row[1], row[2], row[3].parseInt())
+            newMember(
+                row[0].parseInt(),
+                row[1],
+                row[2],
+                row[3].parseInt()
+            )
         )
     return retre
-    

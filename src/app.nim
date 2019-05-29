@@ -1,10 +1,14 @@
 import algorithm
+import asynchttpserver
+import asyncdispatch
 import db_postgres
-import jester
+import httpcore
 import json
 import os
 import re
 import strtabs
+import strutils
+import rosencrantz
 import times
 
 import "db"
@@ -30,43 +34,50 @@ if host == "" or database == "" or user == "":
     quit(5)
 echo "DB_PASSWORD: ******"
 
-let
-    dbPool: DbPool = newPool(host, user, password, database)
-    propsRepo: Props = newProps(dbPool)
-    placesRepo: Places = newPlaces(dbPool)
-    gigRepo: Gigs = newGigs(dbPool, placesRepo)
-    musRepo: Musics = newMusics(dbPool)
-    memRepo: Members = newMembers(dbPool)
-    videoRepo: Videos = newVideos(dbPool, propsRepo)
-    newsRepo: News = newNews(dbPool, propsRepo)
+let con = newPool(
+    newDbConf(host, user, password, database)
+)
 
-template jresp(json: JsonNode, contentType = "application/json"): typed =
-    resp Http200, [("Content-Type", contentType)], $json
+let handler = get[
+    pathChunk("/static")[
+        dir(STATIC_DIR)
+    ] ~
+    pathChunk("/api/v1")[
+        pathChunk("/gigs/all")[
+            ok( %* con.gigs().all())
+        ] ~
+        pathChunk("/gigs")[
+            ok( %* con.gigs().all(since = now()))
+        ] ~
+        pathChunk("/members")[
+            ok( %* con.members().all())
+        ] ~
+        pathChunk("/videos")[
+            scopeAsync do:
+            let limit = con.props().value("max_videos", "10").parseInt()
+            return ok( %* con.videos.all(limit = limit))
+        ] ~
+        pathChunk("/musics")[
+            ok( %* con.musics().all())
+        ] ~
+        pathChunk("/gallery")[
+            scopeAsync do:
+            var
+                retre: seq[string]
+                galleryDir: string = STATIC_DIR & "/gallery"
+            for kind, path in walkDir(galleryDir, false):
+                retre.add(path[8..<path.len])
+            retre.sort(system.cmp)
+            return ok( %* retre)
 
-routes:
-    options re"/*":
-        jresp( %* success())
+        ] ~
+        pathChunk("/news")[
+            scopeAsync do:
+            var limit = con.props().value("max_news", "5").parseInt()
+            return ok( %* con.news().all(limit = limit))
+        ]
+    ]
+]
 
-    get "/api/v1/gigs":
-        jresp( %* gigRepo.allSince(now()))
-
-    get "/api/v1/members":
-        jresp( %* memRepo.all())
-
-    get "/api/v1/videos":
-        jresp( %* videoRepo.all())
-
-    get "/api/v1/musics":
-        jresp( %* musRepo.all())
-
-    get "/api/v1/gallery":
-        var
-            retre: seq[string]
-            galleryDir: string = STATIC_DIR & "/gallery"
-        for kind, path in walkDir(galleryDir, false):
-            retre.add(path[8..<path.len])
-        retre.sort(system.cmp)
-        jresp( %* retre)
-
-    get "/api/v1/news":
-        jresp( %* newsRepo.all())
+let server = newAsyncHttpServer()
+waitFor server.serve(Port(5000), handler)

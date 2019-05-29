@@ -1,38 +1,42 @@
 import db_postgres
-import "../db"
 import strutils
 import "../model/music", "../model/muslink"
 
 type
-    Musics* = object of RootObj
-        db : DbPool
+    Musics* = object
+        db: DbConn
 
-proc newMusics*(db : DbPool) : Musics =
+proc newMusics*(db: DbConn): Musics =
     return Musics(db: db)
 
-proc linksFor(musics: Musics, id: int) : seq[MusLink] =
-    var
-        retre : seq[MusLink] = @[]
-        rows : seq[Row] = musics.db.conn
-            .getAllRows(sql("""select ml.id, ml.url, mp.id, mp.name
-                from music_links ml, music_provs mp
-                where ml.provider = mp.id and ml.music = ?
-                order by mp.id"""), id)
-    for row in rows:
+proc linksFor(musics: Musics, id: int): seq[MusLink] =
+    var query: string = """SELECT ml.id, mp.id, mp.name, ml.url
+        FROM music_links ml, music_provs mp
+        WHERE ml.provider = mp.id and ml.music = ?
+        ORDER by mp.id"""
+    var retre: seq[MusLink] = @[]
+    for row in musics.db.getAllRows(sql(query), id):
         retre.add(
-            newMusLink(row[0].parseInt(), row[1], row[2].parseInt(), row[3])
+            newMusLink(
+                row[0].parseInt(),
+                row[1].parseInt(),
+                row[2],
+                row[3]
+            )
         )
     return retre
 
-proc all*(musics: Musics) : seq[Music] =
-    var
-        retre : seq[Music] = @[]
-        rows : seq[Row] = musics.db.conn
-            .getAllRows(sql("SELECT * FROM music ORDER BY year DESC"))
-    for row in rows:
+proc all*(this: Musics): seq[Music] =
+    var query: string = "SELECT * FROM music ORDER BY year DESC"
+    var retre: seq[Music] = @[]
+    for row in this.db.getAllRows(sql(query)):
         var id: int = row[0].parseInt()
         retre.add(
-            newMusic(id, row[1], row[2].parseInt(), linksFor(musics, id))
+            newMusic(
+                id,
+                row[1],
+                row[2].parseInt(),
+                this.linksFor(id)
+            )
         )
     return retre
-    

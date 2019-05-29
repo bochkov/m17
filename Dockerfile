@@ -1,7 +1,7 @@
 FROM nimlang/nim:latest-alpine AS builder
 COPY src .
 RUN nim --version
-RUN nimble install jester -y
+RUN nimble install rosencrantz -y
 RUN nim c -d:release --threads:on app.nim
 
 FROM alpine
