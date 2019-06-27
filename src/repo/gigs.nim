@@ -35,4 +35,5 @@ proc all*(this: Gigs, since: DateTime = DT_START): seq[Gig] =
             )
         )
         )
+    this.db.close()
     return retre

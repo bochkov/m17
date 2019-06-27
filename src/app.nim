@@ -20,23 +20,23 @@ const STATIC_DIR: string = "./public/static"
 
 let
     host: string = getEnv("DB_HOST")
+    port: string = getEnv("DB_PORT")
     database: string = getEnv("DB_NAME")
     user: string = getEnv("DB_USER")
     password: string = getEnv("DB_PASSWORD")
 
 echo "M17 backend start == ", now()
 echo "DB_HOST: " & host
+echo "DB_PORT: " & port
 echo "DB_NAME: " & database
 echo "DB_USER: " & user
 if host == "" or database == "" or user == "":
-    echo "No env DB_HOST/DB_NAME/DB_USER/DB_PASSWORD"
+    echo "No env DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD"
     echo "Exiting."
     quit(5)
 echo "DB_PASSWORD: ******"
 
-let con = newPool(
-    newDbConf(host, user, password, database)
-)
+let ds = newDbConf(host, port, user, password, database)
 
 let handler = get[
     pathChunk("/static")[
@@ -44,37 +44,40 @@ let handler = get[
     ] ~
     pathChunk("/api/v1")[
         pathChunk("/gigs/all")[
-            ok( %* con.gigs().all())
+            scopeAsync do:
+                return ok( %* ds.gigs().all())
         ] ~
         pathChunk("/gigs")[
-            ok( %* con.gigs().all(since = now()))
+            scopeAsync do:
+                return ok( %* ds.gigs().all(since = now()))
         ] ~
         pathChunk("/members")[
-            ok( %* con.members().all())
+            scopeAsync do:
+                return ok( %* ds.members().all())
         ] ~
         pathChunk("/videos")[
             scopeAsync do:
-            let limit = con.props().value("max_videos", "10").parseInt()
-            return ok( %* con.videos.all(limit = limit))
+                let limit = ds.props().value("max_videos", "10").parseInt()
+                return ok( %* ds.videos.all(limit = limit))
         ] ~
         pathChunk("/musics")[
-            ok( %* con.musics().all())
+            scopeAsync do:
+                return ok( %* ds.musics().all())
         ] ~
         pathChunk("/gallery")[
             scopeAsync do:
-            var
-                retre: seq[string]
-                galleryDir: string = STATIC_DIR & "/gallery"
-            for kind, path in walkDir(galleryDir, false):
-                retre.add(path[8..<path.len])
-            retre.sort(system.cmp)
-            return ok( %* retre)
-
+                var
+                    retre: seq[string]
+                    galleryDir: string = STATIC_DIR & "/gallery"
+                for kind, path in walkDir(galleryDir, false):
+                    retre.add(path[6..<path.len])
+                retre.sort(system.cmp)
+                return ok( %* retre)
         ] ~
         pathChunk("/news")[
             scopeAsync do:
-            var limit = con.props().value("max_news", "5").parseInt()
-            return ok( %* con.news().all(limit = limit))
+                var limit = ds.props().value("max_news", "5").parseInt()
+                return ok( %* ds.news().all(limit = limit))
         ]
     ]
 ]
