@@ -45,15 +45,15 @@ let handler = get[
     pathChunk("/api/v1")[
         pathChunk("/gigs/all")[
             scopeAsync do:
-                return ok( %* ds.gigs().all())
+                return ok( %* ds.gigs().all() )
         ] ~
         pathChunk("/gigs")[
             scopeAsync do:
-                return ok( %* ds.gigs().all(since = now()))
+                return ok( %* ds.gigs().all(since = now()) )
         ] ~
         pathChunk("/members")[
             scopeAsync do:
-                return ok( %* ds.members().all())
+                return ok( %* ds.members.all() )
         ] ~
         pathChunk("/videos")[
             scopeAsync do:

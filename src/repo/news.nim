@@ -16,4 +16,5 @@ proc all*(this: News, limit: int = 10): seq[NewsItem] =
         retre.add(
             newNewsItem(row[0].parseInt(), row[1], row[2], row[3])
         )
+    this.db.close()
     return retre

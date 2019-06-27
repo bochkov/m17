@@ -17,12 +17,7 @@ proc linksFor(musics: Musics, id: int): seq[MusLink] =
     var retre: seq[MusLink] = @[]
     for row in musics.db.getAllRows(sql(query), id):
         retre.add(
-            newMusLink(
-                row[0].parseInt(),
-                row[1].parseInt(),
-                row[2],
-                row[3]
-            )
+            newMusLink(row[0].parseInt(), row[1].parseInt(), row[2], row[3])
         )
     return retre
 
@@ -32,11 +27,7 @@ proc all*(this: Musics): seq[Music] =
     for row in this.db.getAllRows(sql(query)):
         var id: int = row[0].parseInt()
         retre.add(
-            newMusic(
-                id,
-                row[1],
-                row[2].parseInt(),
-                this.linksFor(id)
-            )
+            newMusic(id, row[1], row[2].parseInt(), this.linksFor(id))
         )
+    this.db.close()
     return retre

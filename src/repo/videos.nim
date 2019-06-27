@@ -14,10 +14,7 @@ proc all*(this: Videos, limit: int = 10): seq[Video] =
     var retre: seq[Video] = @[]
     for row in this.db.getAllRows(sql(query), limit):
         retre.add(
-            newVideo(
-                row[0].parseInt(),
-                row[1],
-                row[2]
-            )
+            newVideo(row[0].parseInt(), row[1], row[2])
         )
+    this.db.close()
     return retre

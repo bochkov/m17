@@ -24,16 +24,9 @@ proc all*(this: Gigs, since: DateTime = DT_START): seq[Gig] =
     for row in this.db.getAllRows(sql(query), since):
         retre.add(
             newGig(
-                row[0].parseInt(),
-                row[1],
-                row[2],
-                newPlace(
-                    row[3].parseInt(),
-                    row[4],
-                    row[5],
-                    row[6]
+                row[0].parseInt(), row[1], row[2],
+                newPlace(row[3].parseInt(), row[4], row[5], row[6])
             )
-        )
         )
     this.db.close()
     return retre

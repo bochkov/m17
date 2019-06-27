@@ -12,4 +12,5 @@ proc value*(this: Props, name, def: string): string =
     var val: string = this.db.getValue(sql(query), name)
     if val == "":
         return def
+    this.db.close()
     return val
