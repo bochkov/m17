@@ -22,3 +22,8 @@ script:
   - docker build -t m17 .
   - docker tag m17:latest 902382300595.dkr.ecr.us-east-1.amazonaws.com/m17:latest
   - docker push 902382300595.dkr.ecr.us-east-1.amazonaws.com/m17:latest
+
+notifications:
+  webhooks:
+    urls:
+      - https://resnyx.sergeybochkov.com/travis
