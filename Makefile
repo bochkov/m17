@@ -10,3 +10,5 @@ debug:
 
 run:
 	nim c -r -o:app --nimcache=nimcache src/app.nim
+clean:
+	rm -rf nimcache app
