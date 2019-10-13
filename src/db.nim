@@ -1,9 +1,6 @@
 import db_postgres
-import os
-import times
 import strutils
-import repo/[props, gigs, members, musics, places, videos, news]
-import model/[gig, member, music, place, video, newsitem]
+import repo/[props, gigs, members, musics, videos, news]
 
 type
     DbConf* = object

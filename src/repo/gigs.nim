@@ -1,7 +1,6 @@
 import db_postgres
 import strutils
 import times
-import "places"
 import "../model/gig", "../model/place"
 
 let DT_START: DateTime = "1982-10-16".parse("yyyy-MM-dd")

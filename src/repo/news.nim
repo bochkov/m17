@@ -10,7 +10,7 @@ proc newNews*(db: DbConn): News =
     return News(db: db)
 
 proc all*(this: News, limit: int = 10): seq[NewsItem] =
-    var query: string = "SELECT * FROM news ORDER BY dt DESC LIMIT ?"
+    var query: string = "SELECT * FROM news WHERE hidden=false ORDER BY dt DESC LIMIT ?"
     var retre: seq[NewsItem] = @[]
     for row in this.db.getAllRows(sql(query), limit):
         retre.add(

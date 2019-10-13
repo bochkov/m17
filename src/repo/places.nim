@@ -1,6 +1,4 @@
 import db_postgres
-import strutils
-import "../model/place"
 
 type
     Places* = object
