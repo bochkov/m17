@@ -2,8 +2,8 @@ FROM nimlang/nim:latest-alpine AS builder
 RUN apk add --no-cache libpq pcre tzdata
 COPY src .
 RUN nim --version
-RUN nimble install rosencrantz -y
-RUN nim c -d:release app.nim
+RUN nimble install jester -y
+RUN nim c -d:release --threads:on app.nim
 
 FROM alpine
 RUN apk add --no-cache libpq pcre tzdata

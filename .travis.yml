@@ -24,6 +24,7 @@ script:
   - docker push 902382300595.dkr.ecr.us-east-1.amazonaws.com/m17:latest
 
 notifications:
+  email: false
   webhooks:
     urls:
       - https://resnyx.sergeybochkov.com/travis
