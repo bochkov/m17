@@ -1,16 +1,15 @@
 import algorithm
-import asynchttpserver
 import asyncdispatch
 import httpcore
-import json
 import os
-import strutils
 import jester
+import json
+import strutils
 import times
 
 import "db"
 import repo/[props, gigs, members, musics, videos, news]
-import model/[gig, member, music, video, newsitem]
+import model/[gig, member, video, newsitem]
 
 const STATIC_DIR: string = "./public/static"
 
@@ -38,7 +37,7 @@ proc serve(ds: DbConf) =
             resp j
 
         get "/api/v1/musics":
-            resp %*ds.musics().all()
+            resp %*ds.musics().promo()
 
         get "/api/v1/gallery":
             var
@@ -52,6 +51,9 @@ proc serve(ds: DbConf) =
         get "/api/v1/news":
             var limit = ds.props().value("max_news", "5").parseInt()
             resp %*ds.news().all(limit = limit)
+
+        get "/api/v1/news/@id":
+            resp %*ds.news().get(@"id".parseInt())
 
 if isMainModule:
     echo "M17 backend start == ", now()

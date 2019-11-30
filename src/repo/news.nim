@@ -18,3 +18,13 @@ proc all*(this: News, limit: int = 10): seq[NewsItem] =
         )
     this.db.close()
     return retre
+
+proc get*(this: News, id: int): seq[NewsItem] =
+    var query: string = "SELECT * FROM news WHERE id = ?"
+    var retre: seq[NewsItem] = @[]
+    for row in this.db.getAllRows(sql(query), id):
+        retre.add(
+            newNewsItem(row[0].parseInt(), row[1], row[2], row[3])
+        )
+    this.db.close()
+    return retre

@@ -9,15 +9,27 @@ type
 proc newMusics*(db: DbConn): Musics =
     return Musics(db: db)
 
-proc linksFor(musics: Musics, id: int): seq[MusLink] =
+## список ссылок для альбома
+proc linksFor(this: Musics, id: int): seq[MusLink] =
     var query: string = """SELECT ml.id, mp.id, mp.name, ml.url
         FROM music_links ml, music_provs mp
         WHERE ml.provider = mp.id and ml.music = ?
-        ORDER by mp.id"""
+        ORDER BY mp.id"""
     var retre: seq[MusLink] = @[]
-    for row in musics.db.getAllRows(sql(query), id):
+    for row in this.db.getAllRows(sql(query), id):
         retre.add(
             newMusLink(row[0].parseInt(), row[1].parseInt(), row[2], row[3])
+        )
+    return retre
+
+proc promo*(this: Musics): seq[MusLink] =
+    var query: string = """SELECT id, provider, url
+        FROM music_links
+        ORDER BY id"""
+    var retre: seq[MusLink] = @[]
+    for row in this.db.getAllRows(sql(query)):
+        retre.add(
+            newMusLink(row[0].parseInt(), row[1].parseInt(), "", row[2])
         )
     return retre
 
