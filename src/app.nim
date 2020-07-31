@@ -37,7 +37,7 @@ proc serve(ds: DbConf) =
             resp j
 
         get "/api/v1/musics":
-            resp %*ds.musics().promo()
+            resp %*ds.musics().all()
 
         get "/api/v1/gallery":
             var
