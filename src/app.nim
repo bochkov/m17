@@ -39,6 +39,9 @@ proc serve(ds: DbConf) =
         get "/api/v1/musics":
             resp %*ds.musics().all()
 
+        get "/api/v1/promo":
+            resp %*ds.musics().promo()
+
         get "/api/v1/gallery":
             var
                 retre: seq[string]

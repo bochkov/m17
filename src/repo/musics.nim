@@ -25,6 +25,7 @@ proc linksFor(this: Musics, id: int): seq[MusLink] =
 proc promo*(this: Musics): seq[MusLink] =
     var query: string = """SELECT id, provider, url
         FROM music_links
+        WHERE music = (select max(music) from music_links)
         ORDER BY id"""
     var retre: seq[MusLink] = @[]
     for row in this.db.getAllRows(sql(query)):
