@@ -22,16 +22,16 @@ proc linksFor(this: Musics, id: int): seq[MusLink] =
         )
     return retre
 
-proc promo*(this: Musics): seq[MusLink] =
-    var query: string = """SELECT id, provider, url
-        FROM music_links
-        WHERE music = (select max(music) from music_links)
-        ORDER BY id"""
-    var retre: seq[MusLink] = @[]
+proc promo*(this: Musics): seq[Music] =
+    var query: string = """SELECT * FROM music m
+        WHERE m.id = (select max(id) from music)"""
+    var retre: seq[Music] = @[]
     for row in this.db.getAllRows(sql(query)):
+        var id: int = row[0].parseInt()
         retre.add(
-            newMusLink(row[0].parseInt(), row[1].parseInt(), "", row[2])
+            newMusic(id, row[1], row[2].parseInt(), this.linksFor(id))
         )
+    this.db.close()
     return retre
 
 proc all*(this: Musics): seq[Music] =
