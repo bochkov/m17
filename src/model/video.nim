@@ -1,7 +1,7 @@
 import json
 
 type
-    Video* = object
+    Video* = ref object of RootObj
         id: int
         iframe: string
         desc: string

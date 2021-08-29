@@ -1,18 +1,16 @@
 import db_postgres
 import strutils
 import times
+import "db_repo"
 import "../model/gig", "../model/place"
 
-let DT_START: DateTime = "1982-10-16".parse("yyyy-MM-dd")
-
 type
-    Gigs* = object
-        db: DbConn
+    GigRepo* = ref object of Repo
 
-proc newGigs*(db: DbConn): Gigs =
-    return Gigs(db: db)
+proc gigRepo*(db: DbConn): GigRepo =
+    return GigRepo(db: db)
 
-proc all*(this: Gigs, since: DateTime = DT_START): seq[Gig] =
+proc all*(this: GigRepo, since: DateTime): seq[Gig] =
     var query: string = """SELECT 
         g.id, g.dt, g.tm, 
         p.id, p.name, p.address, p.link 
@@ -27,5 +25,4 @@ proc all*(this: Gigs, since: DateTime = DT_START): seq[Gig] =
                 newPlace(row[3].parseInt(), row[4], row[5], row[6])
             )
         )
-    this.db.close()
     return retre

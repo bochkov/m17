@@ -2,7 +2,7 @@ import json
 import "muslink"
 
 type
-    Music* = object
+    Music* = ref object of RootObj
         id: int
         name: string
         year: int

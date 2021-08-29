@@ -1,7 +1,7 @@
 import json
 
 type
-    Place* = object
+    Place* = ref object of RootObj
         id: int
         name: string
         address: string

@@ -1,16 +1,16 @@
 import db_postgres
 import strutils
 import "../model/music", "../model/muslink"
+import "db_repo"
 
 type
-    Musics* = object
-        db: DbConn
+    MusicRepo* = ref object of Repo
 
-proc newMusics*(db: DbConn): Musics =
-    return Musics(db: db)
+proc musicRepo*(db: DbConn): MusicRepo =
+    return MusicRepo(db: db)
 
 ## список ссылок для альбома
-proc linksFor(this: Musics, id: int): seq[MusLink] =
+proc linksFor(this: MusicRepo, id: int): seq[MusLink] =
     var query: string = """SELECT ml.id, mp.id, mp.name, ml.url
         FROM music_links ml, music_provs mp
         WHERE ml.provider = mp.id and ml.music = ?
@@ -22,7 +22,7 @@ proc linksFor(this: Musics, id: int): seq[MusLink] =
         )
     return retre
 
-proc promo*(this: Musics): seq[Music] =
+proc promo*(this: MusicRepo): Music =
     var query: string = """SELECT * FROM music m
         WHERE m.id = (select max(id) from music)"""
     var retre: seq[Music] = @[]
@@ -31,10 +31,9 @@ proc promo*(this: Musics): seq[Music] =
         retre.add(
             newMusic(id, row[1], row[2].parseInt(), this.linksFor(id))
         )
-    this.db.close()
-    return retre
+    return retre[0]
 
-proc all*(this: Musics): seq[Music] =
+proc all*(this: MusicRepo): seq[Music] =
     var query: string = "SELECT * FROM music WHERE type = 1 ORDER BY year DESC"
     var retre: seq[Music] = @[]
     for row in this.db.getAllRows(sql(query)):
@@ -42,5 +41,4 @@ proc all*(this: Musics): seq[Music] =
         retre.add(
             newMusic(id, row[1], row[2].parseInt(), this.linksFor(id))
         )
-    this.db.close()
     return retre

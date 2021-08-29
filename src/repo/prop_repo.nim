@@ -1,16 +1,15 @@
 import db_postgres
+import "db_repo"
 
 type
-    Props* = object
-        db: DbConn
+    PropRepo* = ref object of Repo
 
-proc newProps*(db: DbConn): Props =
-    return Props(db: db)
+proc propRepo*(db: DbConn): PropRepo =
+    return PropRepo(db: db)
 
-proc value*(this: Props, name, def: string): string =
+proc value*(this: PropRepo, name, def: string): string =
     var query: string = "SELECT value FROM props WHERE name = ?"
     var val: string = this.db.getValue(sql(query), name)
     if val == "":
         return def
-    this.db.close()
     return val

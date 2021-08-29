@@ -1,7 +1,7 @@
 import json
 
 type
-    MusLink* = object
+    MusLink* = ref object of RootObj
         id: int
         provid: int
         provider: string

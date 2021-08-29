@@ -1,7 +1,7 @@
 import json
 
 type
-    Response = object
+    Response = ref object of RootObj
         result: string
 
 proc success*() : Response =

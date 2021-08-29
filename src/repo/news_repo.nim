@@ -1,30 +1,28 @@
 import db_postgres
 import strutils
 import "../model/newsitem"
+import "db_repo"
 
 type
-    News* = object
-        db: DbConn
+    NewsRepo* = ref object of Repo
 
-proc newNews*(db: DbConn): News =
-    return News(db: db)
+proc newsRepo*(db: DbConn): NewsRepo =
+    return NewsRepo(db: db)
 
-proc all*(this: News, limit: int = 10): seq[NewsItem] =
+proc all*(this: NewsRepo, limit: int): seq[NewsItem] =
     var query: string = "SELECT * FROM news WHERE hidden=false ORDER BY dt DESC LIMIT ?"
     var retre: seq[NewsItem] = @[]
     for row in this.db.getAllRows(sql(query), limit):
         retre.add(
             newNewsItem(row[0].parseInt(), row[1], row[2], row[3])
         )
-    this.db.close()
     return retre
 
-proc get*(this: News, id: int): seq[NewsItem] =
+proc get*(this: NewsRepo, id: int): NewsItem =
     var query: string = "SELECT * FROM news WHERE id = ?"
     var retre: seq[NewsItem] = @[]
     for row in this.db.getAllRows(sql(query), id):
         retre.add(
             newNewsItem(row[0].parseInt(), row[1], row[2], row[3])
         )
-    this.db.close()
-    return retre
+    return retre[0]

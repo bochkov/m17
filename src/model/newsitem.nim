@@ -2,7 +2,7 @@ import json
 import times
 
 type
-    NewsItem* = object
+    NewsItem* = ref object of RootObj
         id: int
         dt: DateTime
         text: string

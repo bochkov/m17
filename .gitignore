@@ -1,4 +1,6 @@
-app
-nimcache/
-public/
-start.sh
+.DS_Store
+
+/app
+/start.sh
+
+/nimcache/

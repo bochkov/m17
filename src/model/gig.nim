@@ -3,7 +3,7 @@ import times
 import "place"
 
 type
-    Gig* = object
+    Gig* = ref object of RootObj
         id: int
         date: DateTime
         place: Place

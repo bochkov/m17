@@ -1,5 +1,5 @@
-import algorithm
 import asyncdispatch
+import db_postgres
 import httpcore
 import os
 import jester
@@ -7,11 +7,9 @@ import json
 import strutils
 import times
 
-import "db"
-import repo/[props, gigs, members, musics, videos, news]
-import model/[gig, member, video, newsitem]
-
-const STATIC_DIR: string = "./public/static"
+import model/[gig, member, music, newsitem, video]
+import repo/[gig_repo, member_repo, music_repo, news_repo, prop_repo, video_repo]
+import service/[gigs, members, musics, news, props, videos]
 
 let
     host: string = getEnv("DB_HOST")
@@ -20,43 +18,37 @@ let
     user: string = getEnv("DB_USER")
     password: string = getEnv("DB_PASSWORD")
 
-proc serve(ds: DbConf) =
+proc serve(props: Props, gigs: Gigs, members: Members, 
+           musics: Musics, news: News, videos: Videos) =
     routes:
         get "/api/v1/gigs/all":
-            resp %*ds.gigs().all()
+            resp %*gigs.findAll()
         
         get "/api/v1/gigs":
-            resp %*ds.gigs().all(since = now())
+            resp %*gigs.findAll(since = now())
 
         get "/api/v1/members":
-            resp %*ds.members.all()
+            resp %*members.findAll()
+
+        get "/api/v1/allMembers":
+            resp %*members.findAllTime()
 
         get "/api/v1/videos":
-            var limit = ds.props().value("max_videos", "10").parseInt()
-            var j = %* ds.videos.all(limit = limit)
-            resp j
+            var limit = props.valueOf("max_videos", "10").parseInt()
+            resp %*videos.findAll(limit = limit)
 
         get "/api/v1/musics":
-            resp %*ds.musics().all()
+            resp %*musics.findAll()
 
         get "/api/v1/promo":
-            resp %*ds.musics().promo()
-
-        get "/api/v1/gallery":
-            var
-                retre: seq[string]
-                galleryDir: string = STATIC_DIR & "/gallery"
-            for kind, path in walkDir(galleryDir, false):
-                retre.add(path[6..<path.len])
-            retre.sort(system.cmp)
-            resp %*retre
+            resp %*musics.promo()
 
         get "/api/v1/news":
-            var limit = ds.props().value("max_news", "5").parseInt()
-            resp %*ds.news().all(limit = limit)
+            var limit = props.valueOf("max_news", "5").parseInt()
+            resp %*news.findAll(limit = limit)
 
         get "/api/v1/news/@id":
-            resp %*ds.news().get(@"id".parseInt())
+            resp %*news.findOne(@"id".parseInt())
 
 if isMainModule:
     echo "M17 backend start == ", now()
@@ -70,6 +62,18 @@ if isMainModule:
         quit(5)
     echo "DB_PASSWORD: ******"
 
-    serve(
-        newDbConf(host, port, user, password, database)
+    # подключение к БД
+    var con: DbConn = db_postgres.open(
+        "", user, password,
+        "host=$1 port=$2 dbname=$3" % [host, port, database]
     )
+    discard con.setEncoding("UTF-8")
+    # создание репозиториев и сервисов
+    let props: Props = newProps(propRepo(con))
+    let gigs: Gigs = newGigs(gigRepo(con))
+    let members: Members = newMembers(memberRepo(con))
+    let musics: Musics = newMusics(musicRepo(con))
+    let news: News = newNews(newsRepo(con))
+    let videos: Videos = newVideos(videoRepo(con))
+    #
+    serve(props, gigs, members, musics, news, videos)
