@@ -12,8 +12,10 @@ proc memberRepo*(db: DbConn): MemberRepo =
     return MemberRepo(db: db)
 
 proc all*(this: MemberRepo): seq[Member] =
-    var query = """SELECT m.id, m.name, m.text, m.weight, m.actual 
-        FROM members m WHERE m.actual=true ORDER BY weight"""
+    var query = """SELECT m.id, m.name, i.text, m.weight, m.actual 
+        FROM members m, instrument i 
+        WHERE m.instrument=i.id AND m.actual=true 
+        ORDER BY weight"""
     var retre: seq[Member] = @[]
     for row in this.db.getAllRows(sql(query)):
         retre.add(
@@ -28,8 +30,10 @@ proc all*(this: MemberRepo): seq[Member] =
     return retre
 
 proc allTime*(this: MemberRepo): seq[Member] =
-    var query = """SELECT m.id, m.name, m.text, m.weight, m.actual 
-        FROM members m ORDER BY weight"""
+    var query = """SELECT m.id, m.name, i.text, m.weight, m.actual 
+        FROM members m, instrument i
+        WHERE m.instrument=i.id
+        ORDER BY weight"""
     var retre: seq[Member] = @[]
     for row in this.db.getAllRows(sql(query)):
         retre.add(

@@ -30,20 +30,20 @@ proc serve(props: Props, gigs: Gigs, members: Members,
         get "/api/v1/members":
             resp %*members.findAll()
 
-        get "/api/v1/allMembers":
+        get "/api/v1/members/all":
             resp %*members.findAllTime()
 
         get "/api/v1/videos":
             var limit = props.valueOf("max_videos", "10").parseInt()
             resp %*videos.findAll(limit = limit)
 
-        get "/api/v1/musics":
+        get "/api/v1/albums/all":
             resp %*musics.all()
 
-        get "/api/v1/musics/albums":
+        get "/api/v1/albums/":
             resp %*musics.albums()
 
-        get "/api/v1/musics/singles":
+        get "/api/v1/albums/singles":
             resp %*musics.singles()
 
         get "/api/v1/promo":
