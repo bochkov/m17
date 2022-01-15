@@ -38,7 +38,13 @@ proc serve(props: Props, gigs: Gigs, members: Members,
             resp %*videos.findAll(limit = limit)
 
         get "/api/v1/musics":
-            resp %*musics.findAll()
+            resp %*musics.all()
+
+        get "/api/v1/musics/albums":
+            resp %*musics.albums()
+
+        get "/api/v1/musics/singles":
+            resp %*musics.singles()
 
         get "/api/v1/promo":
             resp %*musics.promo()
