@@ -24,7 +24,7 @@ proc linksFor(this: MusicRepo, id: int): seq[MusLink] =
 
 proc promo*(this: MusicRepo): Music =
     var query: string = """SELECT * FROM music m
-        WHERE m.id = (select max(id) from music)"""
+        WHERE m.id = (select max(id) from music where ignore=false)"""
     var retre: seq[Music] = @[]
     for row in this.db.getAllRows(sql(query)):
         var id: int = row[0].parseInt()
@@ -34,7 +34,7 @@ proc promo*(this: MusicRepo): Music =
     return retre[0]
 
 proc all*(this: MusicRepo): seq[Music] =
-    var query: string = "SELECT * FROM music ORDER BY year DESC, id DESC"
+    var query: string = "SELECT * FROM music WHERE ignore=false ORDER BY year DESC, id DESC"
     var retre: seq[Music] = @[]
     for row in this.db.getAllRows(sql(query)):
         var id: int = row[0].parseInt()
