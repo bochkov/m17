@@ -7,11 +7,6 @@ sudo: required
 services:
   - docker
 
-addons:
-  apt:
-    packages:
-      - docker-ce
-
 before_install:
   - pip install --user awscli
   - export PATH=$PATH:$HOME/.local/bin

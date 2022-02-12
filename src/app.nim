@@ -40,7 +40,7 @@ proc serve(props: Props, gigs: Gigs, members: Members,
         get "/api/v1/albums/all":
             resp %*musics.all()
 
-        get "/api/v1/albums/":
+        get "/api/v1/albums":
             resp %*musics.albums()
 
         get "/api/v1/albums/singles":
