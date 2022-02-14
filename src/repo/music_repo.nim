@@ -23,22 +23,24 @@ proc linksFor(this: MusicRepo, id: int): seq[MusLink] =
     return retre
 
 proc promo*(this: MusicRepo): Music =
-    var query: string = """SELECT * FROM music m
+    var query: string = """SELECT m.id, m.name, m.year, m.type, m.slug
+        FROM music m
         WHERE m.id = (select max(id) from music where ignore=false)"""
     var retre: seq[Music] = @[]
     for row in this.db.getAllRows(sql(query)):
         var id: int = row[0].parseInt()
         retre.add(
-            newMusic(id, row[1], row[2].parseInt(), row[3].parseInt(), this.linksFor(id))
+            newMusic(id, row[1], row[2].parseInt(), row[3].parseInt(), row[4], this.linksFor(id))
         )
     return retre[0]
 
 proc all*(this: MusicRepo): seq[Music] =
-    var query: string = "SELECT * FROM music WHERE ignore=false ORDER BY year DESC, id DESC"
+    var query: string = """SELECT m.id, m.name, m.year, m.type, m.slug
+        FROM music m WHERE ignore=false ORDER BY year DESC, id DESC"""
     var retre: seq[Music] = @[]
     for row in this.db.getAllRows(sql(query)):
         var id: int = row[0].parseInt()
         retre.add(
-            newMusic(id, row[1], row[2].parseInt(), row[3].parseInt(), this.linksFor(id))
+            newMusic(id, row[1], row[2].parseInt(), row[3].parseInt(), row[4], this.linksFor(id))
         )
     return retre

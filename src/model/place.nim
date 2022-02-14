@@ -6,13 +6,15 @@ type
         name: string
         address: string
         link: string
+        slug: string
 
-proc newPlace*(id: int, name, address, link: string): Place =
+proc newPlace*(id: int, name, address, link, slug: string): Place =
     return Place(
         id: id,
         name: name,
         address: address,
-        link: link
+        link: link,
+        slug: slug
     )
 
 proc `%`*(place: Place): JsonNode =
@@ -20,5 +22,6 @@ proc `%`*(place: Place): JsonNode =
         "id": place.id,
         "name": place.name,
         "address": place.address,
-        "link": place.link
+        "link": place.link,
+        "slug": place.slug
     }

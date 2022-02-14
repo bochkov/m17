@@ -7,14 +7,16 @@ type
         name: string
         year: int
         mType: int
+        slug: string
         links: seq[MusLink]
 
-proc newMusic*(id: int, name: string, year: int, mType: int, links: seq[MusLink]): Music =
+proc newMusic*(id: int, name: string, year: int, mType: int, slug: string, links: seq[MusLink]): Music =
     return Music(
         id: id,
         name: name,
         year: year,
         mType: mType,
+        slug: slug,
         links: links
     )
 
@@ -27,5 +29,6 @@ proc `%`*(this: Music): JsonNode =
         "name": this.name,
         "type": this.mType,
         "year": this.year,
+        "slug": this.slug,
         "links": this.links
     }
