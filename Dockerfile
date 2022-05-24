@@ -7,9 +7,7 @@ RUN nim c -d:release --threads:on app.nim
 
 FROM alpine
 RUN apk add --no-cache libpq pcre tzdata
-RUN cp /usr/share/zoneinfo/America/New_York /etc/localtime  \
-    && echo "America/New_York" > /etc/timezone \
-    && apk del tzdata
+ENV TZ=Asia/Yekaterinburg
 RUN mkdir /m17
 WORKDIR /m17
 COPY --from=builder app .
