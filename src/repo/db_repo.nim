@@ -1,5 +1,5 @@
-import db_postgres
+import "../db"
 
 type
     Repo* = ref object of RootObj
-        db*: DbConn
+        db*: Database

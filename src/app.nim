@@ -1,5 +1,4 @@
 import asyncdispatch
-import db_postgres
 import httpcore
 import os
 import jester
@@ -7,6 +6,7 @@ import json
 import strutils
 import times
 
+import "db"
 import model/[gig, member, music, newsitem, video]
 import repo/[gig_repo, member_repo, music_repo, news_repo, prop_repo, video_repo]
 import service/[gigs, members, musics, news, props, videos]
@@ -69,17 +69,15 @@ if isMainModule:
     echo "DB_PASSWORD: ******"
 
     # подключение к БД
-    var con: DbConn = db_postgres.open(
-        "", user, password,
-        "host=$1 port=$2 dbname=$3" % [host, port, database]
+    var db: Database = newDatabase(
+        host, port, database, user, password
     )
-    discard con.setEncoding("UTF-8")
     # создание репозиториев и сервисов
-    let props: Props = newProps(propRepo(con))
-    let gigs: Gigs = newGigs(gigRepo(con))
-    let members: Members = newMembers(memberRepo(con))
-    let musics: Musics = newMusics(musicRepo(con))
-    let news: News = newNews(newsRepo(con))
-    let videos: Videos = newVideos(videoRepo(con))
+    let props: Props = newProps(propRepo(db))
+    let gigs: Gigs = newGigs(gigRepo(db))
+    let members: Members = newMembers(memberRepo(db))
+    let musics: Musics = newMusics(musicRepo(db))
+    let news: News = newNews(newsRepo(db))
+    let videos: Videos = newVideos(videoRepo(db))
     #
     serve(props, gigs, members, musics, news, videos)
